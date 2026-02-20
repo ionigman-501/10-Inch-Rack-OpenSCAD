@@ -1,5 +1,6 @@
 rack_width = 254.0; // [ 254.0:10 inch, 152.4:6 inch]
 rack_height = 1.0; // [0.5:0.5:5]
+front_thickness = 5.0;
 half_height_holes = true; // [true:Show partial holes at edges, false:Hide partial holes]
 
 switch_width = 135.0;
@@ -21,13 +22,12 @@ module switch_mount(switch_width, switch_height, switch_depth) {
     //6 inch racks (mounts=152.4mm; rails=15.875mm; usable space=120.65mm)
     //10 inch racks (mounts=254.0mm; rails=15.875mm; usable space=221.5mm)
     chassis_width = min(switch_width + 12, (rack_width == 152.4) ? 120.65 : 221.5);
-    front_thickness = 3.0;
-    corner_radius = 4.0;
+    corner_radius = 2.0;
     chassis_edge_radius = 2.0;
     tolerance = 0.42;
 
     zip_tie_hole_count = 8;
-    zip_tie_hole_width = 1.5;
+    zip_tie_hole_width = 5.0;
     zip_tie_hole_length = 5;
     zip_tie_indent_depth = 2;
     zip_tie_cutout_depth = 7;
@@ -128,32 +128,55 @@ module switch_mount(switch_width, switch_height, switch_depth) {
         // First hole: 6.35mm from top of U
         // Second hole: 22.225mm from top of U (middle)
         // Third hole: 38.1mm from top of U (6.35mm from bottom)
-        u_hole_positions = [6.35, 22.225, 38.1]; // positions within each U
+        u_hole_positions_half = [6.35, 22.225, 38.1]; // positions within each U
+        u_hole_positions_no_half = [6.35, 38.1];
+        
         
         // Calculate how many full and partial U units we need to consider
         max_u = ceil(rack_height); // Include partial U units
         
         for (side_x = [hole_left_x, hole_right_x]) {
-            for (u = [0:max_u-1]) {
-                for (hole_pos = u_hole_positions) {
-                    // Calculate hole position from top of entire rack
-                    hole_y = height - (u * 44.45 + hole_pos);
-                    // Always show holes that are at least partially within the rack height
-                    // Always show holes fully inside the rack
-                    fully_inside = (hole_y >= slot_height/2 && hole_y <= height - slot_height/2);
-                    // Show partial holes at edge only if half_height_holes is true
-                    partially_inside = (hole_y + slot_height/2 > 0 && hole_y - slot_height/2 < height);
-                    show_hole = fully_inside || (half_height_holes && partially_inside && !fully_inside);
-                    if (show_hole) {
-                        translate([side_x, hole_y, 0]) {
-                            linear_extrude(height = chassis_depth_main) {
-                                capsule_slot_2d(slot_len, slot_height);
+            for (u = [0:max_u-1]) {              
+                if (half_height_holes) {
+                    for (hole_pos = u_hole_positions_half) {
+                        // Calculate hole position from top of entire rack
+                        hole_y = height - (u * 44.45 + hole_pos);
+                        // Always show holes that are at least partially within the rack height
+                        // Always show holes fully inside the rack
+                        fully_inside = (hole_y >= slot_height/2 && hole_y <= height - slot_height/2);
+                        // Show partial holes at edge only if half_height_holes is true
+                        partially_inside = (hole_y + slot_height/2 > 0 && hole_y - slot_height/2 < height);
+                        show_hole = fully_inside || (half_height_holes && partially_inside && !fully_inside);
+                        if (show_hole) {
+                            translate([side_x, hole_y, 0]) {
+                                linear_extrude(height = chassis_depth_main) {
+                                    capsule_slot_2d(slot_len, slot_height);
+                                }
                             }
                         }
                     }
-                }
+                } else {
+                    for (hole_pos = u_hole_positions_no_half) {
+                        // Calculate hole position from top of entire rack
+                        hole_y = height - (u * 44.45 + hole_pos);
+                        // Always show holes that are at least partially within the rack height
+                        // Always show holes fully inside the rack
+                        fully_inside = (hole_y >= slot_height/2 && hole_y <= height - slot_height/2);
+                        // Show partial holes at edge only if half_height_holes is true
+                        partially_inside = (hole_y + slot_height/2 > 0 && hole_y - slot_height/2 < height);
+                        show_hole = fully_inside || (half_height_holes && partially_inside && !fully_inside);
+                        if (show_hole) {
+                            translate([side_x, hole_y, 0]) {
+                                linear_extrude(height = chassis_depth_main) {
+                                    capsule_slot_2d(slot_len, slot_height);
+                                }
+                            }
+                        }
+                    }
+                }        
             }
         }
+        
     }
 
     // Power wire cutouts: 5mm diameter holes at top and bottom rack hole positions
