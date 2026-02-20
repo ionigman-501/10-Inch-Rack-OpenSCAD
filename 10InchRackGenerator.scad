@@ -221,10 +221,10 @@ module switch_mount(switch_width, switch_height, switch_depth) {
 
     // Simplified air holes with staggered honeycomb pattern on all faces
     module air_holes() {
-        hole_d = 16;
-        spacing_x = 15;  // Horizontal spacing (X and Y directions)
-        spacing_z = 17;  // Vertical spacing (Z direction) - tighter to match visual density
-        margin = 3; // Keep holes away from edges
+        hole_d = 8;
+        spacing_x = hole_d;  // Horizontal spacing (X and Y directions)
+        spacing_z = hole_d;  // Vertical spacing (Z direction)
+        margin = 1; // Keep holes away from edges
         
         // BACK FACE HOLES (Y-axis through back)
         // Calculate available space for holes within switch dimensions
@@ -237,11 +237,11 @@ module switch_mount(switch_width, switch_height, switch_depth) {
         
         // Calculate actual grid size for centering
         actual_grid_width = (x_cols - 1) * spacing_x;
-        actual_grid_depth = (z_rows - 1) * spacing_z;
+        actual_grid_depth = (z_rows - 2) * spacing_z;
         
         // Center the grid within the switch cutout area
         cutout_center_x = rack_width / 2;
-        cutout_center_z = front_thickness + switch_depth / 2;
+        cutout_center_z = switch_depth / 2;
         
         x_start = cutout_center_x - actual_grid_width / 2;
         z_start = cutout_center_z - actual_grid_depth / 2;
@@ -283,7 +283,7 @@ module switch_mount(switch_width, switch_height, switch_depth) {
         
         // Calculate actual grid size for sides
         actual_grid_height = (y_cols - 1) * spacing_x;
-        actual_grid_depth_side = (z_rows_side - 1) * spacing_z;
+        actual_grid_depth_side = (z_rows_side - 2) * spacing_z;
         
         // Center the grid within the switch cutout area (Y and Z)
         cutout_center_y = height / 2;  // Center of the 1U height
