@@ -2,6 +2,7 @@ rack_width = 254.0; // [ 254.0:10 inch, 152.4:6 inch]
 rack_height = 1.0; // [0.5:0.5:5]
 front_thickness = 5.0;
 half_height_holes = true; // [true:Show partial holes at edges, false:Hide partial holes]
+chassis_thickness = 3.0;
 
 switch_width = 135.0;
 switch_depth = 135.0;
@@ -21,7 +22,7 @@ height = 44.45 * rack_height;
 module switch_mount(switch_width, switch_height, switch_depth) {
     //6 inch racks (mounts=152.4mm; rails=15.875mm; usable space=120.65mm)
     //10 inch racks (mounts=254.0mm; rails=15.875mm; usable space=221.5mm)
-    chassis_width = min(switch_width + 12, (rack_width == 152.4) ? 120.65 : 221.5);
+    chassis_width = min(switch_width + 2*chassis_thickness, 214.0 );
     corner_radius = 2.0;
     chassis_edge_radius = 2.0;
     tolerance = 0.42;
@@ -75,7 +76,7 @@ module switch_mount(switch_width, switch_height, switch_depth) {
     // Create the main body as a separate module
     module main_body() {
         side_margin = (rack_width - chassis_width) / 2;
-        chassis_height = switch_height + 12;
+        chassis_height = switch_height + 2*chassis_thickness;
         union() {
             // Front panel
             linear_extrude(height = front_thickness) {
@@ -115,14 +116,14 @@ module switch_mount(switch_width, switch_height, switch_depth) {
     module all_rack_holes() {
         // Rack standard: 3 holes per U, with specific positioning
         // Each U is 44.45mm, holes are at specific positions within each U
-        hole_spacing_x = (rack_width == 152.4) ? 136.526 : 236.525; // 6 inch : 10 inch rack
+        hole_spacing_x = 234.0; //my 10inch rack
         hole_left_x = (rack_width - hole_spacing_x) / 2;
         hole_right_x = (rack_width + hole_spacing_x) / 2;
 
-        // 10 inch rack = 10x7mm oval
+        // my 10 inch rack = 10x7mm oval
         // 6 inchr rack = 3.25 x 6.5mm oval
-        slot_len = (rack_width == 152.4) ? 6.5 : 10.0;
-        slot_height = (rack_width == 152.4) ? 3.25 : 7.0;
+        slot_len = 6.833;
+        slot_height = 5.5;
 
         // Standard rack hole positions within each 1U (44.45mm) unit:
         // First hole: 6.35mm from top of U
