@@ -30,7 +30,7 @@ module switch_mount(switch_width, switch_height, switch_depth) {
     zip_tie_hole_count = 8;
     zip_tie_hole_width = 5.0;
     zip_tie_hole_length = 5;
-    zip_tie_indent_depth = 2;
+    zip_tie_indent_depth = 1.0;
     zip_tie_cutout_depth = 7;
 
     chassis_depth_main = switch_depth + zip_tie_cutout_depth;
@@ -209,7 +209,7 @@ module switch_mount(switch_width, switch_height, switch_depth) {
         
         // Zip tie indents (top and bottom)
         x_pos = (rack_width - switch_width)/2;
-        chassis_height = switch_height + 12;
+        chassis_height = min(switch_height + 2 * chassis_thickness, rack_height * 44.45 );
         // Bottom indent
         translate([x_pos, (height - chassis_height)/2, switch_depth]) {
             cube([switch_width, zip_tie_indent_depth, zip_tie_cutout_depth]);
@@ -223,8 +223,8 @@ module switch_mount(switch_width, switch_height, switch_depth) {
     // Simplified air holes with staggered honeycomb pattern on all faces
     module air_holes() {
         hole_d = 8;
-        spacing_x = hole_d;  // Horizontal spacing (X and Y directions)
-        spacing_z = hole_d;  // Vertical spacing (Z direction)
+        spacing_x = 12;  // Horizontal spacing (X and Y directions)
+        spacing_z = 12;  // Vertical spacing (Z direction)
         margin = 1; // Keep holes away from edges
         
         // BACK FACE HOLES (Y-axis through back)
@@ -271,8 +271,8 @@ module switch_mount(switch_width, switch_height, switch_depth) {
         
         // SIDE FACE HOLES (X-axis through left and right sides)
         // Calculate chassis dimensions
-        chassis_width = min(switch_width + 12, (rack_width == 152.4) ? 120.65 : 221.5);
-        side_margin = (rack_width - chassis_width) / 2;
+        chassis_width = min(switch_width + 2*chassis_thickness, 214.0 );
+        side_margin = (rack_width - chassis_width) / 2 ; //(254 - 186) / 2 = 34
         
         // Calculate available space within switch height
         available_height = switch_height - (2 * margin);
